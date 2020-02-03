@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class BroadcastManager {
     private static final String TAG = BroadcastManager.class.getSimpleName();
-    private static final String SERVER_PACKAGENAME = "com.example.nad.demo";
+    private static final String SERVER_PACKAGENAME = "com.example.nad.noridemo";
 
     private static final String INT_KEY = "executable";
     private static final String PACKAGENAME = "packagename";
@@ -93,7 +93,7 @@ public class BroadcastManager {
         callServerReceiver(mContext);
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

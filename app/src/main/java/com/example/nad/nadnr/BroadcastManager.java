@@ -12,14 +12,13 @@ import android.os.Looper;
 import android.util.Log;
 
 public class BroadcastManager {
-    private static final String TAG = BroadcastManager.class.getSimpleName();
-    private static final String SERVER_PACKAGENAME = "com.example.nad.noridemo";
+    private static final String SERVER_PACKAGENAME = "com.example.nad.noridemo";    // 고부장 어플 패키지명
 
     private static final String INT_KEY = "executable";
-    private static final String PACKAGENAME = "packagename";
+    private static final String GAME_CODE = "G100100101"; // 게임코드
 
-    private static final String SERVER_RECEIVER_NAME = "com.nad.demo.server.RECEIVER";
-    private static final String CLIENT_RECEIVER_NAME = "com.nad.demo.client.RECEIVER";
+    private static final String SERVER_RECEIVER_NAME = "com.nad.demo.server.RECEIVER";  // 고부장 어플 리시버명
+    private static final String CLIENT_RECEIVER_NAME = "com.nad.demo.client.RECEIVER";  // 게임 어플 리시버명
 
     private static final int EXECUTE            =  0;
     private static final int NB_NO_RESPONSE     = -1;
@@ -35,12 +34,7 @@ public class BroadcastManager {
     public static int result = NB_NO_RESPONSE;
     private static Context mContext;
 
-    /**
-     * 클라이언트 리시버 등록
-     */
     private static void registerClientReceiver(Context context) {
-        Log.d(TAG, "registerClientReceiver");
-
         broadcastReceiverThread = new HandlerThread(HANDLERTHREAD_NAME);
         broadcastReceiverThread.start();
 
@@ -53,26 +47,16 @@ public class BroadcastManager {
                 null, broadcastReceiverHandler);
     }
 
-    /**
-     * 클라이언트 리시버 해제
-     */
     private static void unregisterClientReceiver(Context context) {
-        Log.d(TAG, "unregisterClientReceiver");
         context.unregisterReceiver(mReceiver);
         broadcastReceiverLooper.quit();
     }
 
-    /**
-     * 서버 리시버 송신
-     */
     private static void callServerReceiver(Context context) {
-        Log.d(TAG, "callServerReceiver");
         Intent intent = new Intent(SERVER_RECEIVER_NAME);
-        intent.putExtra(PACKAGENAME,context.getPackageName());
-        Log.d(TAG, PACKAGENAME+":"+context.getPackageName());
+        intent.putExtra("GAME_CODE", GAME_CODE);
         context.sendBroadcast(intent);
     }
-
 
     public static void resetResult() {
         result = NB_NO_RESPONSE;
@@ -81,11 +65,7 @@ public class BroadcastManager {
         if (chkInstall == null) result = NB_NOT_INSTALLED;
     }
 
-    /**
-     * 클라이언트에서 호출
-     */
     public static int isExecutable(Context context) {
-        Log.d(TAG, "isExecutable");
         mContext = context;
 
         resetResult();
@@ -101,13 +81,9 @@ public class BroadcastManager {
         return result;
     }
 
-    /**
-     * 클라이언트 브로드캐스트 리시버
-     */
     private static BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive");
             Bundle bundle = intent.getExtras();
             if (bundle != null)
             {
@@ -122,7 +98,6 @@ public class BroadcastManager {
                     default:
                         break;
                 }
-                Log.e(TAG,"onReceive - result :"+ result);
             }
         }
     };

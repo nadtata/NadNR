@@ -12,13 +12,12 @@ import android.os.Looper;
 import android.util.Log;
 
 public class BroadcastManager {
-    private static final String SERVER_PACKAGENAME = "com.example.nad.noridemo";    // 고부장 어플 패키지명
+    private static final String SERVER_PACKAGENAME = "com.example.nad.noridemo";
 
     private static final String INT_KEY = "executable";
-    private static final String GAME_CODE = "G100100101"; // 게임코드
 
-    private static final String SERVER_RECEIVER_NAME = "com.nad.demo.server.RECEIVER";  // 고부장 어플 리시버명
-    private static final String CLIENT_RECEIVER_NAME = "com.nad.demo.client.RECEIVER";  // 게임 어플 리시버명
+    private static final String SERVER_RECEIVER_NAME = "com.nad.demo.server.RECEIVER";
+    private static final String CLIENT_RECEIVER_NAME = "com.nad.demo.client.RECEIVER";
 
     private static final int EXECUTE            =  0;
     private static final int NB_NO_RESPONSE     = -1;
@@ -52,9 +51,9 @@ public class BroadcastManager {
         broadcastReceiverLooper.quit();
     }
 
-    private static void callServerReceiver(Context context) {
+    private static void callServerReceiver(Context context, String appCode) {
         Intent intent = new Intent(SERVER_RECEIVER_NAME);
-        intent.putExtra("GAME_CODE", GAME_CODE);
+        intent.putExtra("appCode", appCode);
         context.sendBroadcast(intent);
     }
 
@@ -65,12 +64,12 @@ public class BroadcastManager {
         if (chkInstall == null) result = NB_NOT_INSTALLED;
     }
 
-    public static int isExecutable(Context context) {
+    public static int isExecutable(Context context, String appCode) {
         mContext = context;
 
         resetResult();
         registerClientReceiver(mContext);
-        callServerReceiver(mContext);
+        callServerReceiver(mContext, appCode);
 
         try {
             Thread.sleep(500);

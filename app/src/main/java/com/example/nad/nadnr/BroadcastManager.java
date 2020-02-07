@@ -12,17 +12,14 @@ import android.os.Looper;
 import android.util.Log;
 
 public class BroadcastManager {
-    private static final String SERVER_PACKAGENAME = "com.example.nad.noridemo";
-
-    private static final String INT_KEY = "executable";
-
-    private static final String SERVER_RECEIVER_NAME = "com.nad.demo.server.RECEIVER";
-    private static final String CLIENT_RECEIVER_NAME = "com.nad.demo.client.RECEIVER";
+    private static final String SERVER_RECEIVER = "com.nad.demo.server.RECEIVER";
+    private static final String CLIENT_RECEIVER = "com.nad.demo.client.RECEIVER";
 
     private static final int EXECUTE            =  0;
     private static final int NB_NO_RESPONSE     = -1;
-    private static final int NB_NOT_INSTALLED   = -2;
     private static final int EXPIRED            = -3;
+
+    public static int result = NB_NO_RESPONSE;
 
     // 리시버 서브 스레드 이용
     private static Looper broadcastReceiverLooper = null;
@@ -30,8 +27,6 @@ public class BroadcastManager {
     private static HandlerThread broadcastReceiverThread = null;
     private static final String HANDLERTHREAD_NAME = "broadcastReceiverThread";
 
-    public static int result = NB_NO_RESPONSE;
-    private static Context mContext;
 
     private static void registerClientReceiver(Context context) {
         broadcastReceiverThread = new HandlerThread(HANDLERTHREAD_NAME);
@@ -41,42 +36,41 @@ public class BroadcastManager {
         broadcastReceiverHandler = new Handler(broadcastReceiverLooper);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(CLIENT_RECEIVER_NAME);
+        filter.addAction(CLIENT_RECEIVER);
         context.registerReceiver(mReceiver, filter,
                 null, broadcastReceiverHandler);
     }
 
     private static void unregisterClientReceiver(Context context) {
-        context.unregisterReceiver(mReceiver);
+        try {
+            context.unregisterReceiver(mReceiver);
+        }
+        catch (IllegalArgumentException e) {}
+        catch (Exception e) {}
+        finally {}
         broadcastReceiverLooper.quit();
     }
 
     private static void callServerReceiver(Context context, String appCode) {
-        Intent intent = new Intent(SERVER_RECEIVER_NAME);
+        Intent intent = new Intent(SERVER_RECEIVER);
         intent.putExtra("appCode", appCode);
         context.sendBroadcast(intent);
     }
 
     public static void resetResult() {
         result = NB_NO_RESPONSE;
-        PackageManager pm = mContext.getPackageManager();
-        Intent chkInstall = pm.getLaunchIntentForPackage(SERVER_PACKAGENAME);
-        if (chkInstall == null) result = NB_NOT_INSTALLED;
     }
 
-    public static int isExecutable(Context context, String appCode) {
-        mContext = context;
-
+    public static int init(Context context, String appCode) {
         resetResult();
-        registerClientReceiver(mContext);
-        callServerReceiver(mContext, appCode);
-
+        registerClientReceiver(context);
+        callServerReceiver(context, appCode);
         try {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        unregisterClientReceiver(mContext);
+        unregisterClientReceiver(context);
         return result;
     }
 
@@ -86,17 +80,7 @@ public class BroadcastManager {
             Bundle bundle = intent.getExtras();
             if (bundle != null)
             {
-                switch (bundle.getInt(INT_KEY))
-                {
-                    case 0:
-                        result = EXECUTE;
-                        break;
-                    case -3:
-                        result = EXPIRED;
-                        break;
-                    default:
-                        break;
-                }
+                result = bundle.getInt("executablce");
             }
         }
     };

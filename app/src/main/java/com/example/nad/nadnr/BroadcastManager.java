@@ -80,7 +80,7 @@ public class BroadcastManager {
             Bundle bundle = intent.getExtras();
             if (bundle != null)
             {
-                result = bundle.getInt("executablce");
+                result = bundle.getInt("executable");
             }
         }
     };

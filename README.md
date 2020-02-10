@@ -26,7 +26,8 @@ dependencies {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // input your appCode
+        // init(context,appCode)
+        // input context and your appCode
         BroadcastManager.init(this, appCode);
     }
 ```
